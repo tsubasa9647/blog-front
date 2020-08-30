@@ -41,6 +41,7 @@ export default {
       // { name: 'twitter:site', content: '@Twitter' },
     ],
   },
+  
   /*
   ** Global CSS
   */
@@ -51,6 +52,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    'plugins/vuetify'
   ],
   /*
   ** Auto import components
@@ -62,6 +64,7 @@ export default {
   */
   buildModules: [
     '@nuxt/typescript-build',
+    '@nuxtjs/vuetify'
   ],
   /*
   ** Nuxt.js modules
@@ -72,10 +75,26 @@ export default {
       id: process.env.GAID
     }]
   ],
+  generate: {
+    routes() {
+      return client.getEntries({
+        'content_type': process.env.CTF_BLOG_POST_TYPE_ID,
+        order: '-sys.createdAt'
+      }).then(entries => {
+        return entries.items.map(entry => {
+          return {
+            route: `posts/${entry.fields.slug}`,
+            payload: entry
+          }
+        })
+      })
+    }
+  },
   /*
   ** Build configuration
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    transpile: ['vuetify/lib'],
   }
 }
