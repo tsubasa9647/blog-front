@@ -1,4 +1,5 @@
 require('dotenv').config()
+import { createClient } from './plugins/contentful.js'
 
 export default {
   /*
@@ -41,7 +42,7 @@ export default {
       // { name: 'twitter:site', content: '@Twitter' },
     ],
   },
-  
+
   /*
   ** Global CSS
   */
@@ -77,6 +78,7 @@ export default {
   ],
   generate: {
     routes() {
+      const client = createClient()
       return client.getEntries({
         'content_type': process.env.CTF_BLOG_POST_TYPE_ID,
         order: '-sys.createdAt'
