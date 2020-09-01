@@ -1,36 +1,51 @@
 <template>
-  <div>
-    <!-- render data of the person -->
-    <h1>{{ person.fields.name }}</h1>
-    <!-- render blog posts -->
-    <ul>
-      <li v-for="(post, index) in posts" :key="index">
-        <nuxt-link :to="`/posts/${post.sys.id}`">
-          {{
-          post.fields.title
-          }}
-        </nuxt-link>
-      </li>
-      <v-col cols="12">
-        <v-row justify="space-around">
-          <v-icon>fas fa-lock</v-icon>
-          <v-icon>fas fa-search</v-icon>
-          <v-icon>fas fa-list</v-icon>
-          <v-icon>fas fa-edit</v-icon>
-          <v-icon>fas fa-tachometer-alt</v-icon>
-          <v-icon>fas fa-circle-notch fa-spin</v-icon>
+  <v-container fluid>
+    <v-row justify="center">
+      <v-col cols="12" sm="11" md="10" xl="8">
+        <v-row v-if="posts.length">
+          <v-col v-for="(post, i) in posts" :key="i" cols="12" sm="6" lg="4" xl="3">
+            <v-card max-width="400" class="mx-auto">
+              <v-img
+                :src="setEyeCatch(post).url"
+                :alt="setEyeCatch(post).title"
+                :aspect-ratio="16/9"
+                max-height="200"
+                class="white--text"
+              >
+                <v-card-title class="align-end fill-height font-weight-bold">{{ post.fields.title }}</v-card-title>
+              </v-img>
+
+              <v-card-text>{{ post.fields.publishDate }}</v-card-text>
+
+              <v-list-item three-line style="min-height: unset;">
+                <v-list-item-subtitle>{{ post.fields.body }}</v-list-item-subtitle>
+              </v-list-item>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn text color="primary" :to="linkTo(post)">この記事をみる</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
         </v-row>
+        <div v-else class="text-center">投稿された記事はありません。</div>
       </v-col>
-    </ul>
-  </div>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import { createClient } from "~/plugins/contentful.js";
+import { mapGetters } from "vuex";
 
 const client = createClient();
 
 export default {
+  computed: {
+    linkTo: () => (obj) => {
+      return { name: "posts-slug", params: { slug: obj.fields.slug } };
+    },
+    ...mapGetters(["setEyeCatch"]),
+  },
   // `env` is available in the context object
   asyncData({ env }) {
     return Promise.all([

@@ -3,8 +3,8 @@
     <template v-if="currentPost">
       {{ currentPost.fields.title }}
       <v-img
-        :src="currentPost.fields.image.fields.file.url"
-        :alt="currentPost.fields.image.fields.title"
+        :src="setEyeCatch(currentPost).url"
+        :alt="setEyeCatch(currentPost).title"
         :aspect-ratio="16/9"
         width="700"
         height="400"
@@ -28,8 +28,14 @@
 
 <script>
 import { createClient } from "~/plugins/contentful";
+import { mapGetters } from "vuex";
+
 const client = createClient();
 export default {
+  computed: {
+    ...mapGetters(["setEyeCatch"]),
+  },
+
   async asyncData({ env, params }) {
     let currentPost = null;
     await client
